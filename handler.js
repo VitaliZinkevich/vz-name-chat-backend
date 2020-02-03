@@ -13,56 +13,11 @@ const successfullResponse = {
 };
 
 module.exports.connectionHandler = (event, context, callback) => {
-  // let email = "vitalizinkevich@gmail.com";
-  // const textBody = `
-  //   текст тела письма
-  // `;
-
   if (event.requestContext.eventType === "CONNECT") {
     // Handle connection
     addConnection(event.requestContext.connectionId)
       .then(() => {
-        // const paramsAdmin = {
-        //   Destination: {
-        //     ToAddresses: [email]
-        //   },
-        //   Message: {
-        //     Body: {
-        //       Html: {
-        //         Charset: "UTF-8",
-        //         Data: `КТО ТО ПОДКЛЮЧЕН`
-        //       },
-        //       Text: {
-        //         Charset: "UTF-8",
-        //         Data: textBody
-        //       }
-        //     },
-        //     Subject: {
-        //       Charset: "UTF-8",
-        //       Data: "сообщение сайта по web dev"
-        //     }
-        //   },
-        //   Source: "vitalizinkevich@gmail.com"
-        // };
-        // let emailPromise = new AWS.SES({ apiVersion: "2010-12-01" })
-        //   .sendEmail(paramsAdmin)
-        //   .promise();
-
-        // emailPromise
-        //   .then(res => {
         callback(null, successfullResponse);
-        // })
-        // .catch(err => {
-        //   callback(null, {
-        //     statusCode: 500,
-        //     headers: {
-        //       "Content-Type": "text/plain",
-        //       "Access-Control-Allow-Origin": "*",
-        //       "Access-Control-Allow-Credentials": true
-        //     },
-        //     body: message || "error message"
-        //   });
-        // });
       })
       .catch(err => {
         console.log(err);
@@ -72,47 +27,7 @@ module.exports.connectionHandler = (event, context, callback) => {
     // Handle disconnection
     deleteConnection(event.requestContext.connectionId)
       .then(() => {
-        // const paramsAdmin = {
-        //   Destination: {
-        //     ToAddresses: [email]
-        //   },
-        //   Message: {
-        //     Body: {
-        //       Html: {
-        //         Charset: "UTF-8",
-        //         Data: `КТО ТО ОТКЛЮЧИЛСЯ`
-        //       },
-        //       Text: {
-        //         Charset: "UTF-8",
-        //         Data: textBody
-        //       }
-        //     },
-        //     Subject: {
-        //       Charset: "UTF-8",
-        //       Data: "сообщение сайта по web dev"
-        //     }
-        //   },
-        //   Source: "vitalizinkevich@gmail.com"
-        // };
-        // let emailPromise = new AWS.SES({ apiVersion: "2010-12-01" })
-        //   .sendEmail(paramsAdmin)
-        //   .promise();
-
-        // emailPromise
-        //   .then(res => {
         callback(null, successfullResponse);
-        // })
-        // .catch(err => {
-        //   callback(null, {
-        //     statusCode: 500,
-        //     headers: {
-        //       "Content-Type": "text/plain",
-        //       "Access-Control-Allow-Origin": "*",
-        //       "Access-Control-Allow-Credentials": true
-        //     },
-        //     body: message || "error message"
-        //   });
-        // });
       })
       .catch(err => {
         console.log(err);
@@ -127,12 +42,54 @@ module.exports.connectionHandler = (event, context, callback) => {
 // THIS ONE DOESNT DO ANYHTING
 module.exports.defaultHandler = (event, context, callback) => {
   console.log("defaultHandler was called");
-  console.log(event);
+  let email = "vitalizinkevich@gmail.com";
+  const textBody = `
+    текст тела письма
+  `;
+  const paramsAdmin = {
+    Destination: {
+      ToAddresses: [email]
+    },
+    Message: {
+      Body: {
+        Html: {
+          Charset: "UTF-8",
+          Data: `Кто то запросил чат. ЯЗЫК ${event.body}`
+        },
+        Text: {
+          Charset: "UTF-8",
+          Data: textBody
+        }
+      },
+      Subject: {
+        Charset: "UTF-8",
+        Data: "сообщение сайта по web dev"
+      }
+    },
+    Source: "vitalizinkevich@gmail.com"
+  };
+  let emailPromise = new AWS.SES({ apiVersion: "2010-12-01" })
+    .sendEmail(paramsAdmin)
+    .promise();
 
-  callback(null, {
-    statusCode: 200,
-    body: "defaultHandler"
-  });
+  emailPromise
+    .then(res => {
+      callback(null, {
+        statusCode: 200,
+        body: "defaultHandler"
+      });
+    })
+    .catch(err => {
+      callback(null, {
+        statusCode: 500,
+        headers: {
+          "Content-Type": "text/plain",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true
+        },
+        body: message || "error message"
+      });
+    });
 };
 
 module.exports.sendMessageHandler = (event, context, callback) => {
